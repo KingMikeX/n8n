@@ -8,6 +8,8 @@
   },
   "packageManager": "pnpm@10.32.1",
   "scripts": {
+    "birth": "docker volume create n8n_data",
+    "ignition": "docker run -it --rm --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n docker.n8n.io/n8nio/n8n",
     "prepare": "node scripts/prepare.mjs",
     "preinstall": "node scripts/block-npm-install.js",
     "build": "turbo run build",

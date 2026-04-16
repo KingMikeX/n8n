@@ -214,6 +214,28 @@ describe('useCanvasOperations', () => {
 		workflowDocumentStoreInstance = useWorkflowDocumentStore(
 			createWorkflowDocumentId(workflowsStore.workflowId),
 		);
+
+		// These actions are stubbed by createTestingPinia, so delegate them to workflowsStore.workflowObject
+		// (which tests set up individually). Tests that need custom behavior can override via vi.spyOn.
+		vi.spyOn(workflowDocumentStoreInstance, 'getNodeByName').mockImplementation(
+			(name: string) => useWorkflowsStore().workflowObject?.getNode(name) ?? null,
+		);
+		vi.spyOn(workflowDocumentStoreInstance, 'getParentNodesByDepth').mockImplementation(
+			(name: string, depth?: number) =>
+				useWorkflowsStore().workflowObject?.getParentNodesByDepth(name, depth) ?? [],
+		);
+		vi.spyOn(workflowDocumentStoreInstance, 'getParentNodes').mockImplementation(
+			(name: string, type, depth) =>
+				useWorkflowsStore().workflowObject?.getParentNodes(name, type, depth) ?? [],
+		);
+		vi.spyOn(workflowDocumentStoreInstance, 'getChildNodes').mockImplementation(
+			(name: string, type, depth) =>
+				useWorkflowsStore().workflowObject?.getChildNodes(name, type, depth) ?? [],
+		);
+		vi.spyOn(workflowDocumentStoreInstance, 'getConnectionsBetweenNodes').mockImplementation(
+			(sources, targets) =>
+				useWorkflowsStore().workflowObject?.getConnectionsBetweenNodes(sources, targets) ?? [],
+		);
 	});
 
 	describe('requireNodeTypeDescription', () => {
@@ -3810,8 +3832,10 @@ describe('useCanvasOperations', () => {
 			// initState creates a new document store for the workflow ID.
 			// Without the fix, the computed workflowDocumentStore would be undefined
 			// (empty workflowId at start) and setConnections would be silently skipped.
-			const newDocStore = useWorkflowDocumentStore(createWorkflowDocumentId(newWorkflowId));
-			expect(newDocStore.setConnections).toHaveBeenCalledWith(testConnections);
+			const workflowDocumentStore = useWorkflowDocumentStore(
+				createWorkflowDocumentId(newWorkflowId),
+			);
+			expect(workflowDocumentStore.setConnections).toHaveBeenCalledWith(testConnections);
 		});
 
 		it('should initialize node data from node type description', async () => {

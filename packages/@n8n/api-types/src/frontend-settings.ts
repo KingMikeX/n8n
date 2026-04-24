@@ -35,6 +35,7 @@ export interface IUserManagementSettings {
 	showSetupOnFirstLoad?: boolean;
 	smtpSetup: boolean;
 	authenticationMethod: AuthenticationMethod;
+	passwordMinLength: number;
 }
 
 export interface IEnterpriseSettings {
@@ -282,6 +283,7 @@ export type FrontendModuleSettings = {
 		localGatewayDisabled: boolean;
 		proxyEnabled: boolean;
 		optinModalDismissed: boolean;
+		cloudManaged: boolean;
 	};
 
 	/**
